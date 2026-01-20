@@ -21,7 +21,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_20_045758) do
     t.datetime "completed_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying::text, 'processing'::character varying::text, 'completed'::character varying::text])", name: "campaigns_status_check"
+    t.check_constraint "status::text = ANY (ARRAY['pending'::character varying, 'processing'::character varying, 'completed'::character varying]::text[])", name: "campaigns_status_check"
   end
 
   create_table "recipients", force: :cascade do |t|
@@ -38,7 +38,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_01_20_045758) do
     t.index ["campaign_id", "phone_number"], name: "index_recipients_on_campaign_id_and_phone_number", unique: true
     t.index ["campaign_id", "status"], name: "index_recipients_on_campaign_id_and_status"
     t.check_constraint "email IS NOT NULL OR phone_number IS NOT NULL", name: "recipients_email_or_phone_check"
-    t.check_constraint "status::text = ANY (ARRAY['queued'::character varying::text, 'sent'::character varying::text, 'failed'::character varying::text])", name: "recipients_status_check"
+    t.check_constraint "status::text = ANY (ARRAY['queued'::character varying, 'sent'::character varying, 'failed'::character varying]::text[])", name: "recipients_status_check"
   end
 
   add_foreign_key "recipients", "campaigns"

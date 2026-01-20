@@ -1,0 +1,71 @@
+<div class="space-y-8">
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-900">Campaigns</h1>
+      <p class="mt-1 text-sm text-gray-600">Create, dispatch, and track campaign progress.</p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <%= link_to "New campaign",
+            new_campaign_path,
+            class: "inline-flex items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2" %>
+    </div>
+  </div>
+
+  <div class="rounded-lg bg-white shadow-sm ring-1 ring-gray-200">
+    <div class="border-b border-gray-200 px-6 py-4">
+      <h2 class="text-base font-semibold text-gray-900">All campaigns</h2>
+    </div>
+
+    <% if @campaigns.any? %>
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Title</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Status</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-600">Progress</th>
+              <th scope="col" class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wide text-gray-600">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200 bg-white">
+            <% @campaigns.each do |campaign| %>
+              <% total = campaign.recipients.size %>
+              <% sent = campaign.recipients.count(&:sent?) %>
+              <tr>
+                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                  <%= link_to campaign.title, campaign_path(campaign), class: "text-indigo-600 hover:text-indigo-500" %>
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm"><%= campaign_status_badge(campaign.status) %></td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
+                  <span class="font-medium"><%= sent %></span>/<span class="font-medium"><%= total %></span> sent
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
+                  <div class="flex justify-end gap-3">
+                    <%= link_to "View", campaign_path(campaign), class: "font-medium text-gray-700 hover:text-gray-900" %>
+                    <%= link_to "Edit", edit_campaign_path(campaign), class: "font-medium text-gray-700 hover:text-gray-900" %>
+                    <%= button_to "Delete",
+                          campaign_path(campaign),
+                          method: :delete,
+                          form: { data: { turbo_confirm: "Delete this campaign?" } },
+                          class: "font-medium text-red-600 hover:text-red-500" %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="px-6 py-10">
+        <p class="text-sm text-gray-600">No campaigns yet.</p>
+        <div class="mt-4">
+          <%= link_to "Create your first campaign",
+                new_campaign_path,
+                class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+

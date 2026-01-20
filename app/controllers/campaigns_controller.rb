@@ -1,4 +1,8 @@
 class CampaignsController < ApplicationController
+  def index
+    @campaigns = Campaign.includes(:recipients).order(created_at: :desc)
+  end
+
   def new
     @campaign = Campaign.new
     @campaign.recipients.build
@@ -18,6 +22,31 @@ class CampaignsController < ApplicationController
   def show
     @campaign = Campaign.find(params[:id])
     @recipients = @campaign.recipients.order(:id)
+  end
+
+  def edit
+    @campaign = Campaign.find(params[:id])
+    @campaign.recipients.build if @campaign.recipients.empty?
+  end
+
+  def update
+    @campaign = Campaign.find(params[:id])
+
+    if @campaign.update(campaign_params)
+      redirect_to campaign_path(@campaign), notice: "Campaign updated."
+    else
+      if @campaign.recipients.reject(&:marked_for_destruction?).empty?
+        @campaign.recipients.build
+      end
+
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    campaign = Campaign.find(params[:id])
+    campaign.destroy!
+    redirect_to campaigns_path, notice: "Campaign deleted."
   end
 
   def dispatch_campaign

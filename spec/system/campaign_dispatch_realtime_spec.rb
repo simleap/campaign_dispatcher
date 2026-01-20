@@ -5,6 +5,7 @@ RSpec.describe "Campaign dispatch realtime updates", type: :system, js: true do
 
   it "creates a campaign with nested recipients and updates live during dispatch" do
     visit root_path
+    click_link "New campaign"
 
     fill_in "Title", with: "Realtime campaign"
 

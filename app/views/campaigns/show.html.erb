@@ -34,8 +34,18 @@
   </section>
 
   <div>
-    <%= link_to "Create another campaign",
-          root_path,
-          class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+    <div class="flex flex-wrap gap-4">
+      <%= link_to "Back to campaigns",
+            campaigns_path,
+            class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+      <%= link_to "Edit campaign",
+            edit_campaign_path(@campaign),
+            class: "text-sm font-medium text-gray-700 hover:text-gray-900" %>
+      <%= button_to "Delete campaign",
+            campaign_path(@campaign),
+            method: :delete,
+            form: { data: { turbo_confirm: "Delete this campaign?" } },
+            class: "text-sm font-medium text-red-600 hover:text-red-500" %>
+    </div>
   </div>
 </div>
