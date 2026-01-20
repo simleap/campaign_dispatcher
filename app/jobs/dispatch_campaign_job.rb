@@ -1,5 +1,6 @@
 class DispatchCampaignJob
   include Sidekiq::Job
+  include ActionView::RecordIdentifier
 
   LOCK_NAMESPACE = 42_000
 
@@ -10,6 +11,7 @@ class DispatchCampaignJob
 
       campaign.update!(status: "processing", started_at: Time.current) if campaign.pending?
       campaign.update!(started_at: Time.current) if campaign.processing? && campaign.started_at.nil?
+      broadcast_progress(campaign)
 
       campaign.recipients.where(status: "queued").order(:id).each do |recipient|
         begin
@@ -19,10 +21,14 @@ class DispatchCampaignJob
           recipient.update!(status: "sent", sent_at: Time.current, error_message: nil)
         rescue StandardError => e
           recipient.update!(status: "failed", error_message: e.message.to_s.truncate(200))
+        ensure
+          broadcast_recipient(campaign, recipient)
+          broadcast_progress(campaign)
         end
       end
 
       campaign.update!(status: "completed", completed_at: Time.current)
+      broadcast_progress(campaign)
     end
   end
 
@@ -51,5 +57,23 @@ class DispatchCampaignJob
 
   def simulate_delivery!(recipient)
     raise StandardError, "Simulated delivery failure" if recipient.contact.include?("fail")
+  end
+
+  def broadcast_recipient(campaign, recipient)
+    Turbo::StreamsChannel.broadcast_replace_to(
+      campaign,
+      target: dom_id(recipient),
+      partial: "campaigns/recipient_row",
+      locals: { recipient: recipient }
+    )
+  end
+
+  def broadcast_progress(campaign)
+    Turbo::StreamsChannel.broadcast_replace_to(
+      campaign,
+      target: dom_id(campaign, :progress),
+      partial: "campaigns/progress",
+      locals: { campaign: campaign }
+    )
   end
 end

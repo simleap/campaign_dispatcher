@@ -18,7 +18,6 @@ class CampaignsController < ApplicationController
   def show
     @campaign = Campaign.find(params[:id])
     @recipients = @campaign.recipients.order(:id)
-    @status_counts = @campaign.recipients.group(:status).count
   end
 
   def dispatch

@@ -1,0 +1,13 @@
+<tr id="<%= dom_id(recipient) %>">
+  <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900"><%= recipient.name %></td>
+  <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700"><%= recipient.contact %></td>
+  <td class="whitespace-nowrap px-6 py-4 text-sm"><%= recipient_status_badge(recipient.status) %></td>
+  <td class="px-6 py-4 text-sm">
+    <% if recipient.failed? && recipient.error_message.present? %>
+      <span class="text-red-700"><%= recipient.error_message %></span>
+    <% else %>
+      <span class="text-gray-400">—</span>
+    <% end %>
+  </td>
+</tr>
+
