@@ -21,6 +21,24 @@ class CampaignsController < ApplicationController
     @status_counts = @campaign.recipients.group(:status).count
   end
 
+  def dispatch
+    campaign = Campaign.find(params[:id])
+
+    updated =
+      Campaign.where(id: campaign.id, status: "pending").update_all(
+        status: "processing",
+        started_at: Time.current,
+        updated_at: Time.current
+      )
+
+    if updated == 1
+      DispatchCampaignJob.perform_async(campaign.id)
+      redirect_to campaign_path(campaign), notice: "Dispatch started."
+    else
+      redirect_to campaign_path(campaign), alert: "Campaign is already processing or completed."
+    end
+  end
+
   private
 
   def campaign_params
