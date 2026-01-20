@@ -62,7 +62,7 @@ bundle exec sidekiq -C config/sidekiq.yml
 To keep the assessment self-contained, delivery is simulated:
 
 - Random delay per recipient (`sleep 1..3`) in non-test environments.
-- Any recipient whose `contact` includes `"fail"` is marked `failed` with an `error_message`.
+- Recipients are marked `sent` once processed.
 
 ## Realtime UI (Turbo Streams)
 
@@ -78,9 +78,11 @@ During dispatch:
 
 - String-backed enums in the Rails models.
 - DB check constraints enforce valid `status` values.
+- DB check constraint enforces `email` or `phone_number` is present for each recipient.
 - Indexes:
   - `recipients (campaign_id, status)` for progress queries
-  - unique `recipients (campaign_id, contact)` to prevent duplicates
+  - unique `recipients (campaign_id, email)` to prevent duplicates
+  - unique `recipients (campaign_id, phone_number)` to prevent duplicates
 
 ## Tests
 
@@ -103,4 +105,4 @@ bundle exec rspec
 - Rate limiting, retries with backoff, and provider integrations (email/SMS gateways).
 - More robust observability (structured logs, per-recipient attempts, audit trail).
 - Auth + per-user ownership, authorization, multi-tenant safeguards.
-- Import recipients (CSV upload), duplicate detection/normalization, contact validation.
+- Import recipients (CSV upload), duplicate detection/normalization, email/phone validation.
