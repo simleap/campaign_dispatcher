@@ -1,0 +1,13 @@
+<div class="mx-auto w-full max-w-3xl">
+  <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
+    <h1 class="text-2xl font-semibold text-gray-900"><%= @campaign.title %></h1>
+    <p class="mt-2 text-sm text-gray-600">Recipients: <%= @campaign.recipients.count %></p>
+
+    <div class="mt-6">
+      <%= link_to "Create another campaign",
+            root_path,
+            class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
+    </div>
+  </div>
+</div>
+
