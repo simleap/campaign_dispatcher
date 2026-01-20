@@ -1,11 +1,13 @@
 class CampaignsController < ApplicationController
+  before_action :set_campaign, only: %i[show edit update destroy dispatch_campaign]
+
   def index
     @campaigns = Campaign.includes(:recipients).order(created_at: :desc)
   end
 
   def new
     @campaign = Campaign.new
-    @campaign.recipients.build
+    ensure_recipient_fields(@campaign)
   end
 
   def create
@@ -14,65 +16,59 @@ class CampaignsController < ApplicationController
     if @campaign.save
       redirect_to campaign_path(@campaign), notice: "Campaign created."
     else
-      @campaign.recipients.build if @campaign.recipients.empty?
+      ensure_recipient_fields(@campaign)
       render :new, status: :unprocessable_entity
     end
   end
 
   def show
-    @campaign = Campaign.find(params[:id])
     @recipients = @campaign.recipients.order(:id)
   end
 
   def edit
-    @campaign = Campaign.find(params[:id])
-    @campaign.recipients.build if @campaign.recipients.empty?
+    ensure_recipient_fields(@campaign)
   end
 
   def update
-    @campaign = Campaign.find(params[:id])
-
     if @campaign.update(campaign_params)
       redirect_to campaign_path(@campaign), notice: "Campaign updated."
     else
-      if @campaign.recipients.reject(&:marked_for_destruction?).empty?
-        @campaign.recipients.build
-      end
-
+      ensure_recipient_fields(@campaign)
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    campaign = Campaign.find(params[:id])
-    campaign.destroy!
+    @campaign.destroy!
     redirect_to campaigns_path, notice: "Campaign deleted."
   end
 
   def dispatch_campaign
-    campaign = Campaign.find(params[:id])
+    result = Campaigns::Dispatch.new(campaign: @campaign).call
 
-    updated =
-      Campaign.where(id: campaign.id, status: "pending").update_all(
-        status: "processing",
-        started_at: Time.current,
-        updated_at: Time.current
-      )
-
-    if updated == 1
-      DispatchCampaignJob.perform_async(campaign.id)
-      redirect_to campaign_path(campaign), notice: "Dispatch started."
+    if result.started?
+      redirect_to campaign_path(@campaign), notice: "Dispatch started."
     else
-      redirect_to campaign_path(campaign), alert: "Campaign is already processing or completed."
+      redirect_to campaign_path(@campaign), alert: result.message
     end
   end
 
   private
+
+  def set_campaign
+    @campaign = Campaign.find(params[:id])
+  end
 
   def campaign_params
     params.require(:campaign).permit(
       :title,
       recipients_attributes: %i[id name email phone_number _destroy]
     )
+  end
+
+  def ensure_recipient_fields(campaign)
+    return if campaign.recipients.reject(&:marked_for_destruction?).any?
+
+    campaign.recipients.build
   end
 end

@@ -1,0 +1,25 @@
+<html>
+  <head>
+    <%= csrf_meta_tags %>
+    <%= yield :head %>
+  </head>
+  <body>
+    <%= turbo_frame_tag "page", data: { turbo_action: "advance" } do %>
+      <% if notice.present? %>
+        <div class="mb-6 rounded-md bg-green-50 p-4 ring-1 ring-green-200">
+          <p class="text-sm text-green-800"><%= notice %></p>
+        </div>
+      <% end %>
+
+      <% if alert.present? %>
+        <div class="mb-6 rounded-md bg-red-50 p-4 ring-1 ring-red-200">
+          <p class="text-sm text-red-800"><%= alert %></p>
+        </div>
+      <% end %>
+
+      <%= yield :breadcrumbs if content_for?(:breadcrumbs) %>
+
+      <%= yield %>
+    <% end %>
+  </body>
+</html>
