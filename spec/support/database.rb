@@ -4,4 +4,3 @@ RSpec.configure do |config|
     Campaign.delete_all
   end
 end
-

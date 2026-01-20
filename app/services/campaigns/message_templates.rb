@@ -24,7 +24,7 @@ module Campaigns
     def render_template(template)
       ApplicationController.render(
         template: template,
-        formats: [:text],
+        formats: [ :text ],
         locals: { campaign: campaign, recipient: recipient }
       ).strip
     end
