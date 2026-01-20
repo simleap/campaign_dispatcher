@@ -24,12 +24,6 @@ module Campaigns
         campaign.update!(status: "completed", completed_at: Time.current)
         broadcaster.broadcast_progress(campaign)
       end
-    rescue ActiveRecord::RecordNotFound => e
-      logger.warn("[Campaigns::DispatchRunner] Campaign #{campaign_id} not found: #{e.message}")
-      nil
-    rescue StandardError => e
-      logger.error("[Campaigns::DispatchRunner] #{e.class}: #{e.message}")
-      nil
     end
 
     private

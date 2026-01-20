@@ -100,13 +100,13 @@ RSpec.describe Campaigns::DispatchRunner do
     expect(campaign.reload.started_at).to be_present
   end
 
-  it "does not raise when the campaign does not exist" do
+  it "raises when the campaign does not exist so the job can retry" do
     runner = described_class.new(
       campaign_id: 999_999,
       delivery_service: delivery_service,
       broadcaster: broadcaster
     )
 
-    expect { runner.call }.not_to raise_error
+    expect { runner.call }.to raise_error(ActiveRecord::RecordNotFound)
   end
 end
