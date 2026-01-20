@@ -43,7 +43,11 @@
                 <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
                   <div class="flex justify-end gap-3">
                     <%= link_to "View", campaign_path(campaign), class: "font-medium text-gray-700 hover:text-gray-900" %>
-                    <%= link_to "Edit", edit_campaign_path(campaign), class: "font-medium text-gray-700 hover:text-gray-900" %>
+                    <% if campaign.pending? %>
+                      <%= link_to "Edit", edit_campaign_path(campaign), class: "font-medium text-gray-700 hover:text-gray-900" %>
+                    <% else %>
+                      <span class="font-medium text-gray-400">Edit</span>
+                    <% end %>
                     <%= button_to "Delete",
                           campaign_path(campaign),
                           method: :delete,

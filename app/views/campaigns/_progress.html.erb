@@ -19,14 +19,24 @@
         <% if campaign.completed_at.present? %>
           <span>Completed <%= l(campaign.completed_at, format: :short) %></span>
         <% end %>
+
+        <% unless campaign.pending? %>
+          <span>Editing disabled after dispatch.</span>
+        <% end %>
       </div>
     </div>
 
     <div class="flex flex-col items-stretch gap-2 sm:items-end">
       <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
-        <%= link_to "Edit",
-              edit_campaign_path(campaign),
-              class: "inline-flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" %>
+        <% if campaign.pending? %>
+          <%= link_to "Edit",
+                edit_campaign_path(campaign),
+                class: "inline-flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" %>
+        <% else %>
+          <span class="inline-flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-400 shadow-sm ring-1 ring-gray-200 sm:w-auto">
+            Edit
+          </span>
+        <% end %>
 
         <%= button_to "Delete",
               campaign_path(campaign),

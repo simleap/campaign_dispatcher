@@ -1,5 +1,6 @@
 class CampaignsController < ApplicationController
   before_action :set_campaign, only: %i[show edit update destroy dispatch_campaign]
+  before_action :ensure_editable, only: %i[edit update]
 
   def index
     @campaigns = Campaign.includes(:recipients).order(created_at: :desc)
@@ -70,5 +71,11 @@ class CampaignsController < ApplicationController
     return if campaign.recipients.reject(&:marked_for_destruction?).any?
 
     campaign.recipients.build
+  end
+
+  def ensure_editable
+    return if @campaign.pending?
+
+    redirect_to campaign_path(@campaign), alert: "Campaign has already been dispatched and can no longer be edited."
   end
 end
