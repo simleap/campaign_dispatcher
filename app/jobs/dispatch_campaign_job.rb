@@ -16,8 +16,6 @@ class DispatchCampaignJob
       campaign.recipients.where(status: "queued").order(:id).each do |recipient|
         begin
           maybe_sleep
-          simulate_delivery!(recipient)
-
           recipient.update!(status: "sent", sent_at: Time.current, error_message: nil)
         rescue StandardError => e
           recipient.update!(status: "failed", error_message: e.message.to_s.truncate(200))
@@ -53,10 +51,6 @@ class DispatchCampaignJob
     return if Rails.env.test?
 
     sleep(rand(1..3))
-  end
-
-  def simulate_delivery!(recipient)
-    raise StandardError, "Simulated delivery failure" if recipient.contact.include?("fail")
   end
 
   def broadcast_recipient(campaign, recipient)

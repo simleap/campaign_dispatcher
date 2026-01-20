@@ -7,8 +7,8 @@ RSpec.describe "Campaigns", type: :request do
         campaign: {
           title: "Winter outreach",
           recipients_attributes: [
-            { name: "Ada Lovelace", contact: "ada@example.com" },
-            { name: "Grace Hopper", contact: "grace@example.com" }
+            { name: "Ada Lovelace", email: "ada@example.com" },
+            { name: "Grace Hopper", phone_number: "+15551234567" }
           ]
         }
       }
@@ -21,10 +21,10 @@ RSpec.describe "Campaigns", type: :request do
       expect(response).to redirect_to(campaign_path(campaign))
 
       expect(campaign.title).to eq("Winter outreach")
-      expect(campaign.recipients.order(:id).pluck(:name, :contact, :status)).to eq(
+      expect(campaign.recipients.order(:id).pluck(:name, :email, :phone_number, :status)).to eq(
         [
-          [ "Ada Lovelace", "ada@example.com", "queued" ],
-          [ "Grace Hopper", "grace@example.com", "queued" ]
+          [ "Ada Lovelace", "ada@example.com", nil, "queued" ],
+          [ "Grace Hopper", nil, "+15551234567", "queued" ]
         ]
       )
     end
@@ -34,7 +34,7 @@ RSpec.describe "Campaigns", type: :request do
         campaign: {
           title: "",
           recipients_attributes: [
-            { name: "Ada Lovelace", contact: "ada@example.com" }
+            { name: "Ada Lovelace", email: "ada@example.com" }
           ]
         }
       }
@@ -61,6 +61,24 @@ RSpec.describe "Campaigns", type: :request do
 
       expect(response).to have_http_status(422)
       expect(response.body).to include("Recipients must include at least one recipient")
+    end
+
+    it "returns 422 when a recipient has neither email nor phone number" do
+      params = {
+        campaign: {
+          title: "Invalid recipient",
+          recipients_attributes: [
+            { name: "Ada Lovelace", email: "", phone_number: "" }
+          ]
+        }
+      }
+
+      expect do
+        post campaigns_path, params: params
+      end.not_to change(Campaign, :count)
+
+      expect(response).to have_http_status(422)
+      expect(response.body).to include("Email or phone number must be present")
     end
   end
 end

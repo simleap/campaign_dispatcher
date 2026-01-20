@@ -1,12 +1,23 @@
 FactoryBot.define do
   sequence(:recipient_name) { |n| "Recipient #{n}" }
-  sequence(:recipient_contact) { |n| "recipient#{n}@example.com" }
+  sequence(:recipient_email) { |n| "recipient#{n}@example.com" }
+  sequence(:recipient_phone_number) { |n| "+1555000#{n.to_s.rjust(4, "0")}" }
 
   factory :recipient do
     campaign
     name { generate(:recipient_name) }
-    contact { generate(:recipient_contact) }
+    email { generate(:recipient_email) }
+    phone_number { nil }
     status { "queued" }
+
+    trait :phone_only do
+      email { nil }
+      phone_number { generate(:recipient_phone_number) }
+    end
+
+    trait :with_phone do
+      phone_number { generate(:recipient_phone_number) }
+    end
 
     trait :sent do
       status { "sent" }
@@ -20,4 +31,3 @@ FactoryBot.define do
     end
   end
 end
-

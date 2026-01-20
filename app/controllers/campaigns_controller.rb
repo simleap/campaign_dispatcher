@@ -43,7 +43,7 @@ class CampaignsController < ApplicationController
   def campaign_params
     params.require(:campaign).permit(
       :title,
-      recipients_attributes: %i[id name contact _destroy]
+      recipients_attributes: %i[id name email phone_number _destroy]
     )
   end
 end

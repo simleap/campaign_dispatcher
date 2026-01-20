@@ -1,6 +1,19 @@
 <tr id="<%= dom_id(recipient) %>">
   <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900"><%= recipient.name %></td>
-  <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700"><%= recipient.contact %></td>
+  <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
+    <% if recipient.email.present? %>
+      <%= recipient.email %>
+    <% else %>
+      <span class="text-gray-400">—</span>
+    <% end %>
+  </td>
+  <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-700">
+    <% if recipient.phone_number.present? %>
+      <%= recipient.phone_number %>
+    <% else %>
+      <span class="text-gray-400">—</span>
+    <% end %>
+  </td>
   <td class="whitespace-nowrap px-6 py-4 text-sm"><%= recipient_status_badge(recipient.status) %></td>
   <td class="px-6 py-4 text-sm">
     <% if recipient.failed? && recipient.error_message.present? %>
@@ -10,4 +23,3 @@
     <% end %>
   </td>
 </tr>
-
