@@ -8,27 +8,39 @@
 <div id="<%= dom_id(campaign, :progress) %>" class="space-y-8">
   <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
     <div>
-      <h1 class="text-2xl font-semibold text-gray-900"><%= campaign.title %></h1>
-      <div class="mt-2 flex flex-wrap items-center gap-2">
+      <h1 class="text-3xl font-semibold tracking-tight text-gray-900"><%= campaign.title %></h1>
+      <div class="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-600">
         <%= campaign_status_badge(campaign.status) %>
 
         <% if campaign.started_at.present? %>
-          <span class="text-sm text-gray-600">Started <%= l(campaign.started_at, format: :short) %></span>
+          <span>Started <%= l(campaign.started_at, format: :short) %></span>
         <% end %>
 
         <% if campaign.completed_at.present? %>
-          <span class="text-sm text-gray-600">Completed <%= l(campaign.completed_at, format: :short) %></span>
+          <span>Completed <%= l(campaign.completed_at, format: :short) %></span>
         <% end %>
       </div>
     </div>
 
     <div class="flex flex-col items-stretch gap-2 sm:items-end">
-      <%= button_to "Dispatch Campaign",
-            dispatch_campaign_path(campaign),
-            method: :post,
-            disabled: !campaign.pending?,
-            form: { class: "w-full sm:w-auto" },
-            class: "inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-indigo-300" %>
+      <div class="flex flex-col gap-2 sm:flex-row sm:justify-end">
+        <%= link_to "Edit",
+              edit_campaign_path(campaign),
+              class: "inline-flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto" %>
+
+        <%= button_to "Delete",
+              campaign_path(campaign),
+              method: :delete,
+              form: { data: { turbo_confirm: "Delete this campaign?" } },
+              class: "inline-flex w-full items-center justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-red-700 shadow-sm ring-1 ring-red-200 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:w-auto" %>
+
+        <%= button_to "Dispatch Campaign",
+              dispatch_campaign_path(campaign),
+              method: :post,
+              disabled: !campaign.pending?,
+              form: { class: "w-full sm:w-auto" },
+              class: "inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:bg-indigo-300 sm:w-auto" %>
+      </div>
 
       <% if campaign.processing? %>
         <span class="text-sm text-gray-600">Processing…</span>
@@ -58,4 +70,3 @@
     </div>
   </section>
 </div>
-

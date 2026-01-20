@@ -1,0 +1,17 @@
+<nav aria-label="Breadcrumb" class="mb-6">
+  <ol class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-600">
+    <% items.each_with_index do |item, index| %>
+      <li class="flex items-center gap-x-2">
+        <% if index.positive? %>
+          <span class="text-gray-300">/</span>
+        <% end %>
+
+        <% if item[:path].present? && index < items.length - 1 %>
+          <%= link_to item[:label], item[:path], class: "font-medium text-gray-600 hover:text-gray-900" %>
+        <% else %>
+          <span class="font-medium text-gray-900"><%= item[:label] %></span>
+        <% end %>
+      </li>
+    <% end %>
+  </ol>
+</nav>

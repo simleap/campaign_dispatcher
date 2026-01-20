@@ -1,8 +1,8 @@
 <div class="space-y-8">
   <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
     <div>
-      <h1 class="text-2xl font-semibold text-gray-900">Campaigns</h1>
-      <p class="mt-1 text-sm text-gray-600">Create, dispatch, and track campaign progress.</p>
+      <h1 class="text-3xl font-semibold tracking-tight text-gray-900">Campaigns</h1>
+      <p class="mt-2 text-base text-gray-600">Create, dispatch, and track campaign progress.</p>
     </div>
 
     <div class="flex items-center gap-2">
@@ -32,7 +32,7 @@
             <% @campaigns.each do |campaign| %>
               <% total = campaign.recipients.size %>
               <% sent = campaign.recipients.count(&:sent?) %>
-              <tr>
+              <tr class="hover:bg-gray-50">
                 <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
                   <%= link_to campaign.title, campaign_path(campaign), class: "text-indigo-600 hover:text-indigo-500" %>
                 </td>
@@ -68,4 +68,3 @@
     <% end %>
   </div>
 </div>
-

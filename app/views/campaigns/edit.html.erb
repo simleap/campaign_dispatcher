@@ -1,17 +1,19 @@
+<% content_for :breadcrumbs do %>
+  <%= render "shared/breadcrumbs",
+        items: [
+          { label: "Campaigns", path: campaigns_path },
+          { label: @campaign.title, path: campaign_path(@campaign) },
+          { label: "Edit" }
+        ] %>
+<% end %>
+
 <div class="mx-auto w-full max-w-3xl">
   <div class="mb-8">
-    <h1 class="text-2xl font-semibold text-gray-900">Edit Campaign</h1>
-    <p class="mt-1 text-sm text-gray-600">Update title and recipients.</p>
+    <h1 class="text-3xl font-semibold tracking-tight text-gray-900">Edit campaign</h1>
+    <p class="mt-2 text-base text-gray-600">Update title and recipients.</p>
   </div>
 
   <div class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-200">
     <%= render "form", campaign: @campaign %>
   </div>
-
-  <div class="mt-6">
-    <%= link_to "Back to campaigns",
-          campaigns_path,
-          class: "text-sm font-medium text-indigo-600 hover:text-indigo-500" %>
-  </div>
 </div>
-
