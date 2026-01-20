@@ -28,6 +28,27 @@ RSpec.describe DispatchCampaignJob do
     end
   end
 
+  it "marks a recipient failed and continues when an error occurs" do
+    campaign = create(:campaign, recipients_count: 2)
+    job = described_class.new
+    call_count = 0
+
+    allow(job).to receive(:maybe_sleep) do
+      call_count += 1
+      raise StandardError, "Boom" if call_count == 1
+    end
+
+    job.perform(campaign.id)
+
+    recipients = campaign.recipients.order(:id)
+    first_recipient = recipients.first.reload
+    second_recipient = recipients.second.reload
+
+    expect(first_recipient).to be_failed
+    expect(first_recipient.error_message).to include("Boom")
+    expect(second_recipient).to be_sent
+  end
+
   it "is idempotent when re-run (does not re-process sent/failed)" do
     campaign = create(:campaign, status: "processing", started_at: Time.current)
     queued = campaign.recipients.first
@@ -45,5 +66,13 @@ RSpec.describe DispatchCampaignJob do
     expect(sent.reload.sent_at).to eq(sent_at_before)
     expect(failed.reload.error_message).to eq(error_before)
     expect(queued.reload).to be_sent
+  end
+
+  it "sets started_at if missing while processing" do
+    campaign = create(:campaign, status: "processing", started_at: nil)
+
+    described_class.new.perform(campaign.id)
+
+    expect(campaign.reload.started_at).to be_present
   end
 end
