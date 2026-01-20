@@ -2,9 +2,8 @@ require "sidekiq/web"
 
 Rails.application.routes.draw do
   mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
-  resources :campaigns, only: %i[new create show] do
-    post :dispatch, on: :member
-  end
+  resources :campaigns, only: %i[new create show]
+  post "/campaigns/:id/dispatch", to: "campaigns#dispatch_campaign", as: :dispatch_campaign
 
   root "campaigns#new"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

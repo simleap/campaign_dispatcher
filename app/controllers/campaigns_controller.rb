@@ -20,7 +20,7 @@ class CampaignsController < ApplicationController
     @recipients = @campaign.recipients.order(:id)
   end
 
-  def dispatch
+  def dispatch_campaign
     campaign = Campaign.find(params[:id])
 
     updated =
