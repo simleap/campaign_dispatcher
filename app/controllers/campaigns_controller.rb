@@ -16,7 +16,9 @@ class CampaignsController < ApplicationController
   end
 
   def show
-    @campaign = Campaign.includes(:recipients).find(params[:id])
+    @campaign = Campaign.find(params[:id])
+    @recipients = @campaign.recipients.order(:id)
+    @status_counts = @campaign.recipients.group(:status).count
   end
 
   private
@@ -28,4 +30,3 @@ class CampaignsController < ApplicationController
     )
   end
 end
-
