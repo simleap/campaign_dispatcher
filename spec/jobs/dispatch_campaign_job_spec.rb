@@ -12,13 +12,13 @@ RSpec.describe DispatchCampaignJob do
     expect(runner).to have_received(:call)
   end
 
-  it "does not raise if the runner fails" do
+  it "raises when the runner fails so Sidekiq can retry" do
     campaign = create(:campaign)
     runner = instance_double(Campaigns::DispatchRunner)
 
     allow(runner).to receive(:call).and_raise(StandardError, "boom")
     allow(Campaigns::DispatchRunner).to receive(:new).and_return(runner)
 
-    expect { described_class.new.perform(campaign.id) }.not_to raise_error
+    expect { described_class.new.perform(campaign.id) }.to raise_error(StandardError, "boom")
   end
 end
